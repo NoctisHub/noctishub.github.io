@@ -1,624 +1,1345 @@
-
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/vt323@4.5.8/index.css">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-
+*,*::before,*::after{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 .scene{
-  display:flex;justify-content:center;align-items:center;
-  min-height:700px;
-  background:radial-gradient(ellipse 80% 70% at 50% 55%, #111 0%, #050505 100%);
-  border-radius:12px;padding:40px 20px 60px;
+  display:flex;              /* Usa layout flexbox: organiza filhos em fila/coluna de forma fácil */
+  justify-content:center;   /* Centraliza os filhos horizontalmente */
+  align-items:center;       /* Centraliza os filhos verticalmente */
+  min-height:700px;          /* Altura mínima do palco: pelo menos 700 pixels */
+  background-color: #000000;
+  padding:40px 20px 60px;    /* Espaço interno: 40px em cima, 20px nos lados, 60px embaixo */
 }
 
+/* 
+  ".tv-perspective" = div que cria o efeito de perspectiva 3D.
+  Perspectiva é como a "câmera" da cena 3D: quanto menor o número,  
+  mais dramático/distorcido parece o 3D.
+*/
 .tv-perspective{
-  perspective:1200px;
-  perspective-origin:50% 44%;
+  perspective:1200px;       /* Define a distância da câmera virtual: 1200px */
+  perspective-origin:50% 44%; /* Ponto de fuga da perspectiva (centro ligeiramente acima do meio) */
 }
 
+/* 
+  ".tv-3d" = a TV em si, que será rotacionada em 3D.
+  "transform-style: preserve-3d" é essencial: diz que os filhos
+  desta div também vivem no espaço 3D (não ficam "achatados" em 2D).
+*/
 .tv-3d{
-  position:relative;
-  width:580px;height:460px;
-  transform-style:preserve-3d;
-  transform:rotateX(-7deg) rotateY(-7deg);
-  filter:drop-shadow(0 40px 60px rgba(0,0,0,0.9)) drop-shadow(0 0 40px rgba(0,255,100,0.05));
+  position:relative;           /* Permite posicionar filhos com position:absolute em relação a ela */
+  width:580px;                 /* Largura da TV: 580 pixels */
+  height:460px;                /* Altura da TV: 460 pixels */
+  transform-style:preserve-3d; /* Os elementos filhos também ficam em 3D */
+  transform:rotateX(-10deg) rotateY(20deg);
+  /* Um brilho verde suave */
+  filter:drop-shadow(0 0 40px rgba(0,255,100,0.05));
 }
 
-/* ── TOP FACE ── */
-.tv-top{
-  position:absolute;top:0;left:0;
-  width:580px;height:68px;
-  transform-origin:top center;
-  transform:rotateX(-90deg);
-  background:linear-gradient(to right, #3c3935 0%, #2e2c29 40%, #252320 80%, #1e1d1a 100%);
-  border-radius:22px 22px 0 0;
-}
-.tv-top::after{
-  content:'';position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
-  width:180px;height:10px;
-  background:repeating-linear-gradient(90deg,#1a1815 0,#1a1815 10px,transparent 10px,transparent 14px);
-  opacity:.5;border-radius:2px;
-}
-
-/* ── RIGHT FACE ── */
-.tv-right{
-  position:absolute;top:0;right:0;
-  width:68px;height:460px;
-  transform-origin:right center;
-  transform:rotateY(-90deg);
-  background:linear-gradient(to bottom, #1e1c19 0%, #161411 50%, #0f0e0c 100%);
-}
-.tv-right::before{
-  content:'AV·IN';
-  position:absolute;bottom:90px;left:50%;transform:translateX(-50%);
-  font-family:'VT323',monospace;font-size:9px;color:#2a2825;letter-spacing:1px;
-}
-.tv-right::after{
-  content:'';
-  position:absolute;bottom:68px;left:50%;transform:translateX(-50%);
-  width:14px;height:14px;border-radius:50%;
-  background:#0a0a0a;border:2px solid #222;
-  box-shadow:inset 0 0 4px #000;
-}
-
-/* ── LEFT FACE (barely visible) ── */
-.tv-left{
-  position:absolute;top:0;left:0;
-  width:68px;height:460px;
-  transform-origin:left center;
-  transform:rotateY(90deg);
-  background:linear-gradient(to bottom,#28261f,#1a1815);
-  opacity:.3;
-}
-
-/* ── BOTTOM FACE ── */
-.tv-bottom-face{
-  position:absolute;bottom:0;left:0;
-  width:580px;height:68px;
-  transform-origin:bottom center;
-  transform:rotateX(90deg);
-  background:linear-gradient(to right,#141210 0%,#0e0d0b 100%);
-}
-/* TV feet */
-.tv-bottom-face::before,.tv-bottom-face::after{
-  content:'';position:absolute;bottom:4px;
-  width:80px;height:12px;border-radius:0 0 4px 4px;
-  background:#0a0908;border-top:2px solid #1a1816;
-}
-.tv-bottom-face::before{left:60px;}
-.tv-bottom-face::after{right:60px;}
-
-/* ── FRONT FACE ── */
 .tv-front{
-  position:absolute;inset:0;
-  background:
-    radial-gradient(ellipse 60% 40% at 30% 20%, rgba(70,65,58,0.8) 0%, transparent 60%),
-    linear-gradient(160deg,#2e2c28 0%,#222020 25%,#1d1b19 55%,#181614 80%,#131110 100%);
-  border-radius:22px;
-  display:flex;flex-direction:column;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.07),
-    inset 1px 0 0 rgba(255,255,255,0.04),
-    inset -1px 0 0 rgba(0,0,0,0.4),
-    inset 0 -1px 0 rgba(0,0,0,0.4),
-    inset 0 0 60px rgba(0,0,0,0.3);
+  position:absolute;
+  inset:0; /* Atalho para: top:0; right:0; bottom:0; left:0 — cobre tudo */
+  display:flex;                 /* Filhos organizados em coluna */
+  flex-direction:column;        /* Coloca filhos um abaixo do outro */
 }
 
-/* Front face edge ridge */
-.tv-front::before{
-  content:'';position:absolute;inset:4px;border-radius:18px;
-  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03);
-  pointer-events:none;z-index:20;
-}
+/* 
+  ══════════════════════════════════════
+  SEÇÃO DA TELA
+  ══════════════════════════════════════
+*/
 
-/* ── SCREEN SECTION ── */
+/* Container que envolve toda a área da tela dentro da frente da TV */
 .screen-section{
-  flex:1;padding:14px 16px 0;display:flex;
+  flex:1;          /* Ocupa todo espaço disponível em altura (propriedade do flexbox) */
+  padding:14px 16px 0; /* Espaço interno: 14px cima, 16px lados, 0 embaixo */
+  display:flex;    /* Ativa flexbox para os filhos */
 }
+
+/* 
+  Moldura preta ao redor da tela (o "bezel").
+  A televisão real tem essa borda plástica preta entre a carcaça e a tela.
+*/
 .screen-bezel{
-  flex:1;border-radius:12px;
-  background:#050505;
-  padding:5px;
+  flex:1;          /* Ocupa todo espaço disponível */
+  border-radius:12px;
+  background:#050505; /* Fundo quase preto */
+  padding:5px;     /* Pequeno espaço entre o bezel e a tela */
   box-shadow:
-    inset 0 0 40px rgba(0,0,0,0.97),
-    0 0 0 1px #0c0c0c,
-    0 0 30px rgba(0,255,100,0.04);
-  position:relative;
+    inset 0 0 40px rgba(1, 156, 73, 0.97), /* Sombra interna muito escura */
+    0 0 0 1px #0c0c0c,               /* Borda externa de 1px quase preta */
+    0 0 30px rgba(0,255,100,0.04);   /* Brilho esverdeado difuso ao redor */
+  position:relative; /* Para posicionar o ::before dentro dele */
 }
+
+/* Reflexo de luz no canto da moldura */
 .screen-bezel::before{
-  content:'';position:absolute;inset:0;border-radius:12px;z-index:1;
-  background:linear-gradient(130deg,rgba(255,255,255,0.04) 0%,transparent 35%,transparent 65%,rgba(0,0,0,0.2) 100%);
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:12px;
+  z-index:1;
+  /* Gradiente diagonal: reflexo claro no canto superior esquerdo,
+     escuro no canto inferior direito */
+  background:linear-gradient(130deg,rgba(0, 179, 255, 0.04) 0%,transparent 35%,transparent 65%,rgba(0,0,0,0.2) 100%);
   pointer-events:none;
 }
-.screen{
-  width:100%;height:100%;border-radius:8px;
-  overflow:hidden;position:relative;background:#000;
-}
-.scr-bg{position:absolute;inset:0;z-index:0;
-  background:radial-gradient(ellipse 80% 70% at 50% 50%,#001508 0%,#000 100%);}
-.scanlines{
-  position:absolute;inset:0;z-index:10;pointer-events:none;
-  background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,0.28) 2px,rgba(0,0,0,0.28) 4px);
-}
-.vignette{
-  position:absolute;inset:0;z-index:11;pointer-events:none;border-radius:8px;
-  background:radial-gradient(ellipse 115% 110% at 50% 50%,transparent 52%,rgba(0,0,0,0.42) 72%,rgba(0,0,0,0.86) 100%);
-}
-@keyframes flicker{0%,95%,100%{opacity:1;}96%{opacity:.93;}97.5%{opacity:.97;}99%{opacity:.94;}}
-.flicker-layer{position:absolute;inset:0;z-index:9;pointer-events:none;animation:flicker 9s infinite;}
-@keyframes scanroll{0%{top:-80px;}100%{top:110%;}}
-.scan-roll{position:absolute;left:0;right:0;height:80px;z-index:12;pointer-events:none;
-  background:linear-gradient(to bottom,transparent,rgba(0,255,100,0.018),transparent);
-  animation:scanroll 9s linear infinite;}
 
-/* ── CRT CONTENT ── */
+/* 
+  A TELA EM SI — onde o conteúdo aparece.
+  "overflow:hidden" = qualquer coisa que saia dos limites da tela é cortada.
+*/
+.screen{
+  width:100%;height:100%;
+  border-radius:8px;
+  overflow:hidden;   /* Corta o que ultrapassar as bordas */
+  position:relative; /* Contexto para posicionamento absoluto dos filhos */
+  background:#000;   /* Fundo preto — a tela apagada */
+}
+
+/* 
+  Fundo verde escuro da tela (imita o fósforo dos monitores antigos).
+  "z-index:0" = camada mais ao fundo, atrás de tudo.
+*/
+.scr-bg{
+  position:absolute;
+  inset:0;
+  z-index:0; /* Camada 0 = fundo */
+  /* Círculo esverdeado escuro no centro, preto nas bordas */
+  background:radial-gradient(ellipse 80% 70% at 50% 50%,#001508 0%,#000 100%);
+}
+
+/* 
+  Linhas de scan (scanlines) — o efeito de listras horizontais dos monitores CRT.
+  "repeating-linear-gradient" cria um padrão que se repete:
+  2px transparente + 2px semiopaco = simula as linhas de varredura do tubo de raios catódicos.
+*/
+.scanlines{
+  position:absolute;
+  inset:0;
+  z-index:10; /* Fica acima do conteúdo (z-index 10 > 5 do .crt) */
+  pointer-events:none; /* Não bloqueia cliques do mouse */
+  background:repeating-linear-gradient(
+    to bottom,          /* Direção: de cima para baixo */
+    transparent 0,      /* Começa transparente */
+    transparent 2px,    /* Fica transparente por 2px */
+    rgba(0,0,0,0.28) 2px, /* Vira semiopaco abruptamente */
+    rgba(0,0,0,0.28) 4px  /* Fica semiopaco por mais 2px — depois repete */
+  );
+}
+
+/* 
+  Vinheta — escurece as bordas da tela, como nas TVs antigas.
+  "radial-gradient" com área central transparente e bordas escuras.
+*/
+.vignette{
+  position:absolute;
+  inset:0;
+  z-index:11; /* Acima das scanlines */
+  pointer-events:none;
+  border-radius:8px;
+  background:radial-gradient(
+    ellipse 115% 110% at 50% 50%, /* Elipse grande centrada */
+    transparent 52%,               /* Centro transparente */
+    rgba(0,0,0,0.42) 72%,          /* Começa a escurecer */
+    rgba(0,0,0,0.86) 100%          /* Borda bem escura */
+  );
+}
+
+/* 
+  @keyframes define uma ANIMAÇÃO — uma série de estados ao longo do tempo.
+  "flicker" = trepidação/piscada da tela, como uma TV antiga com mau contato.
+  0% é o início, 100% é o fim. O CSS interpola os valores automaticamente.
+*/
+@keyframes flicker{
+  0%{opacity:1;}    /* Início: totalmente visível */
+  95%{opacity:1;}   /* Fica normal até 95% do tempo */
+  96%{opacity:.93;} /* Piscada rápida: 7% mais transparente */
+  97.5%{opacity:.97;} /* Quase normal */
+  99%{opacity:.94;}   /* Outra piscada */
+  100%{opacity:1;}  /* Volta ao normal */
+}
+
+/* 
+  Camada que aplica a animação "flicker" na tela.
+  "animation: flicker 9s infinite" = roda a animação "flicker" em 9 segundos, repetindo para sempre.
+*/
+.flicker-layer{
+  position:absolute;
+  inset:0;
+  z-index:9;
+  pointer-events:none;
+  animation:flicker 9s infinite; /* flicker: nome | 9s: duração | infinite: repete sempre */
+}
+
+/* 
+  Animação "scanroll" — uma faixa de luz que desce pela tela,
+  simulando o "beam" (feixe) de elétrons de um monitor CRT real.
+  "top:-80px" = começa acima da tela (invisível).
+  "top:110%" = termina abaixo da tela (invisível).
+*/
+@keyframes scanroll{
+  0%{top:-80px;}  /* Começa acima da tela */
+  100%{top:110%;} /* Termina abaixo da tela */
+}
+
+/* 
+  A faixa luminosa que percorre a tela de cima a baixo.
+  "height:80px" = a faixa tem 80px de altura.
+  O gradiente é: transparente → levemente verde → transparente (forma uma faixa suave).
+*/
+.scan-roll{
+  position:absolute;
+  left:0;right:0;  /* Largura total da tela */
+  height:80px;     /* Altura da faixa luminosa */
+  z-index:12;
+  pointer-events:none;
+  background:linear-gradient(
+    to bottom,
+    transparent,                    /* Topo: invisível */
+    rgba(0,255,100,0.018),          /* Meio: levíssimo brilho verde */
+    transparent                     /* Base: invisível */
+  );
+  animation:scanroll 9s linear infinite; /* "linear" = velocidade constante (sem aceleração) */
+}
+
+/* 
+  ══════════════════════════════════════
+  CONTEÚDO DO MONITOR CRT
+  ══════════════════════════════════════
+  ".crt" é o container de todo o conteúdo que aparece NA tela.
+  z-index:5 = fica acima do fundo (0) mas abaixo das scanlines (10).
+*/
 .crt{
-  position:absolute;inset:0;z-index:5;
-  display:flex;flex-direction:column;
-  color:#00ff88;font-family:'VT323','Courier New',monospace;
+  position:absolute;
+  inset:0;
+  z-index:5;
+  display:flex;
+  flex-direction:column; /* Empilha filhos: barra de nav em cima, conteúdo abaixo */
+  color:#00ff88;         /* Cor do texto: verde fosforescente — a cor clássica dos terminais */
+  /* Fontes em ordem de prioridade: usa VT323 se disponível, senão Courier New, senão qualquer monospace */
+  font-family:'VT323','Courier New',monospace;
+  overflow:hidden; /* Nada vaza para fora da tela */
+}
+
+/* 
+  ══════════════════════════════════════
+  BARRA DE NAVEGAÇÃO (NAV)
+  ══════════════════════════════════════
+  A faixa no topo da tela com o logo e os botões.
+*/
+.nav{
+  display:flex;          /* Alinha itens em linha */
+  align-items:center;    /* Centraliza verticalmente */
+  padding:5px 10px;      /* Espaço interno */
+  flex-shrink:0;         /* Não encolhe mesmo que a tela seja pequena */
+  border-bottom:1px solid rgba(0,255,136,.18); /* Linha separadora abaixo: verde com 18% de opacidade */
+  gap:2px;               /* Espaço de 2px entre cada item da nav */
+}
+
+/* Logo "▶ PORTFOLIO.EXE" no canto esquerdo */
+.nav-logo{
+  font-size:13px;
+  letter-spacing:2px;  /* Espaçamento entre letras: deixa mais retrô */
+  flex:1;              /* Ocupa todo espaço sobrando (empurra botões para a direita) */
+  text-shadow:0 0 6px rgba(0,255,136,.8); /* Brilho ao redor do texto (efeito neon) */
+}
+
+/* 
+  Botões de navegação (HOME, WORK, CONTACT).
+  "background:none" remove o fundo padrão dos botões.
+  "border" cria uma borda personalizada.
+*/
+.nb{
+  background:none;     /* Sem fundo padrão */
+  border:1px solid rgba(0,255,136,.28); /* Borda verde semitransparente */
+  color:#00ff88;       /* Texto verde */
+  font-family:inherit; /* Herda a fonte do pai (.crt) — VT323 */
+  font-size:11px;
+  padding:1px 7px;     /* Espaço interno: 1px vertical, 7px horizontal */
+  cursor:pointer;      /* Cursor muda para "mãozinha" ao passar o mouse */
+  letter-spacing:1px;
+  text-shadow:0 0 5px rgba(0,255,136,.7);
+  /* "transition:all .1s" = qualquer mudança de estilo acontece suavemente em 0.1 segundo */
+  transition:all .1s;
+  margin-left:3px;     /* Pequeno espaço à esquerda de cada botão */
+}
+
+/* 
+  Estilo do botão ao passar o mouse (:hover) OU quando tem a classe "on" (ativo).
+  "rgba(0,255,136,.11)" = verde bem transparente — fundo sutil.
+*/
+.nb:hover,.nb.on{
+  background:rgba(0,255,136,.11); /* Fundo levemente verde */
+  border-color:#00ff88;           /* Borda verde sólida */
+}
+
+/* 
+  ══════════════════════════════════════
+  PÁGINAS / SEÇÕES
+  ══════════════════════════════════════
+  Cada "página" é uma div com a classe ".pg".
+  Por padrão, todas ficam escondidas (display:none).
+  Quando adicionamos a classe ".on" via JavaScript, ela aparece.
+*/
+.pg{
+  display:none;        /* ESCONDIDA por padrão */
+  flex:1;              /* Ocupa o espaço restante após a nav */
+  overflow:hidden;     /* Conteúdo que ultrapassar é cortado */
+  flex-direction:column; /* Filhos em coluna */
+}
+
+/* Quando a classe "on" é adicionada, a página aparece como flex */
+.pg.on{
+  display:flex; /* VISÍVEL — substitui o display:none */
+}
+
+/* 
+  ══════════════════════════════════════
+  PÁGINA HOME
+  ══════════════════════════════════════
+*/
+
+/* Container do bloco principal da home (nome + título) */
+.h-hero{
+  text-align:center; /* Centraliza o texto */
+  padding:12px 0 6px; /* Espaço: 12px cima, 0 lados, 6px baixo */
+}
+
+/* Nome grande "ALEX STUDIO" */
+.h-name{
+  font-size:40px;          /* Tamanho grande */
+  letter-spacing:7px;      /* Letras bem espaçadas — estilo retrô */
+  text-transform:uppercase; /* Sempre maiúsculas, independente de como foi digitado */
+  line-height:1;            /* Altura de linha = 1x o tamanho da fonte (sem espaço extra) */
+  /* text-shadow empilhado: brilho verde próximo + brilho verde difuso ao longe */
+  text-shadow:0 0 10px rgba(0,255,136,.9),0 0 30px rgba(0,255,136,.3);
+}
+
+/* Subtítulo "// DESIGNER & DEVELOPER //" */
+.h-role{
+  font-size:13px;
+  letter-spacing:4px;
+  color:rgba(0,255,136,.45); /* Verde com 45% de opacidade — mais discreto */
+  margin-top:2px;
+}
+
+/* Linha divisória horizontal (o elemento <hr> no HTML) */
+.hdiv{
+  width:100%;
+  border:none;              /* Remove a borda padrão do <hr> */
+  border-top:1px solid rgba(0,255,136,.18); /* Linha verde suave por cima */
+  margin:6px 0;             /* 6px de espaço acima e abaixo */
+}
+
+/* Texto de bio/descrição na home */
+.h-bio{
+  font-size:13px;
+  line-height:1.5;          /* Espaçamento entre linhas: 1.5x a fonte = mais legível */
+  color:rgba(0,255,136,.78); /* Verde com 78% de opacidade */
+  max-width:380px;           /* Largura máxima — não estica demais */
+  margin:0 auto 8px;        /* "auto" nos lados centraliza o bloco horizontalmente */
+  text-align:center;
+  padding:0 14px;
+  text-shadow:0 0 5px rgba(0,255,136,.5);
+}
+
+/* Container das "tags" (etiquetas como UI/UX, REACT, etc.) */
+.tags{
+  display:flex;          /* Tags ficam lado a lado */
+  flex-wrap:wrap;        /* Se não couber, quebra para a linha abaixo */
+  gap:4px;               /* 4px de espaço entre cada tag */
+  justify-content:center; /* Centraliza as tags */
+  padding:0 14px;
+  margin-bottom:8px;
+}
+
+/* Estilo de cada tag individual */
+.tag{
+  border:1px solid rgba(0,255,136,.35); /* Borda verde */
+  font-size:10px;
+  padding:1px 6px;       /* Pequeno espaço interno */
+  letter-spacing:1px;
+  text-shadow:0 0 4px rgba(0,255,136,.5);
+}
+
+/* 
+  Animação de "piscar" para o cursor ▊.
+  "step-end" = muda abruptamente (sem suavidade) — igual a um cursor real.
+  "50%" = na metade da duração, fica invisível.
+*/
+@keyframes blink{
+  50%{opacity:0;} /* Na metade do ciclo: invisível */
+}
+
+/* Aplica a animação "blink" ao elemento com classe "bk" (blinker = piscador) */
+.bk{
+  animation:blink 1.1s step-end infinite; /* Pisca a cada 1.1 segundos */
+}
+
+/* Linha de "prompt" do terminal no rodapé da home: C:\PORTFOLIO> █ */
+.prompt{
+  font-size:12px;
+  color:rgba(0,255,136,.35); /* Verde bem apagado */
+  padding:0 12px 7px;
+  margin-top:auto; /* "auto" empurra para o fundo do container flex */
+}
+
+/* 
+  ══════════════════════════════════════
+  PÁGINA WORK (PROJETOS)
+  ══════════════════════════════════════
+*/
+
+/* Label de seção: "// PROJETOS — ..." */
+.sec-label{
+  font-size:10px;
+  color:rgba(0,255,136,.3); /* Verde apagado */
+  padding:3px 12px;
+  letter-spacing:2px;
+  flex-shrink:0; /* Não encolhe */
+}
+
+/* 
+  Grade de 2 colunas para os cartões de projeto.
+  "grid-template-columns:1fr 1fr" = duas colunas de tamanho igual.
+  "1fr" = 1 fração do espaço disponível.
+*/
+.work-grid{
+  display:grid;                      /* Layout em grade */
+  grid-template-columns:1fr 1fr;     /* 2 colunas iguais */
+  gap:6px;                           /* 6px entre os cartões */
+  padding:0 10px 10px;
+  flex:1;
+  overflow-y:auto;   /* Permite rolar verticalmente se houver mais conteúdo */
+  scrollbar-width:none; /* Esconde a barra de rolagem (no Firefox) */
+}
+
+/* Cada cartão de projeto */
+.wcard{
+  border:1px solid rgba(0,255,136,.28);
+  padding:6px;
+  cursor:pointer;     /* Indica que é clicável */
+  transition:all .1s; /* Transição suave ao passar o mouse */
+}
+
+/* Destaque ao passar o mouse sobre o cartão */
+.wcard:hover{
+  border-color:#00ff88;              /* Borda fica verde sólida */
+  background:rgba(0,255,136,.05);    /* Fundo levemente verde */
+}
+
+/* 
+  Container da imagem thumbnail do projeto.
+  Usa o truque "padding-top:%" para criar uma caixa com proporção fixa.
+  "padding-top:52%" = a altura é 52% da largura → proporção quase 2:1.
+*/
+.wcard-img{
+  width:100%;
+  padding-top:52%;    /* Truque para altura proporcional à largura */
+  position:relative; /* Para posicionar a imagem e o placeholder dentro */
+  background:rgba(0,255,136,.05);
+  border:1px solid rgba(0,255,136,.12);
+  margin-bottom:5px;
   overflow:hidden;
 }
 
-/* NAV */
-.nav{
-  display:flex;align-items:center;
-  padding:5px 10px;flex-shrink:0;
-  border-bottom:1px solid rgba(0,255,136,.18);
-  gap:2px;
+/* 
+  A imagem em si dentro do thumbnail.
+  "position:absolute;inset:0" = cobre todo o espaço do .wcard-img.
+  "object-fit:cover" = a imagem cobre toda a área sem distorcer.
+  "filter" aplica efeitos: sepia (sépia) + hue-rotate (muda a tonalidade para verde).
+  "mix-blend-mode:screen" = modo de mesclagem que clareia (como em retroprojetor).
+*/
+.wcard-img img{
+  position:absolute;
+  inset:0;
+  width:100%;height:100%;
+  object-fit:cover;  /* Cobre sem distorcer — pode cortar as bordas */
+  filter:sepia(1) hue-rotate(95deg) saturate(2.5) brightness(.65); /* Efeito CRT verde */
+  mix-blend-mode:screen; /* Modo de mistura: clareia o que estiver embaixo */
 }
-.nav-logo{
-  font-size:13px;letter-spacing:2px;flex:1;
-  text-shadow:0 0 6px rgba(0,255,136,.8);
-}
-.nb{
-  background:none;border:1px solid rgba(0,255,136,.28);
-  color:#00ff88;font-family:inherit;font-size:11px;
-  padding:1px 7px;cursor:pointer;letter-spacing:1px;
-  text-shadow:0 0 5px rgba(0,255,136,.7);transition:all .1s;
-  margin-left:3px;
-}
-.nb:hover,.nb.on{background:rgba(0,255,136,.11);border-color:#00ff88;}
 
-/* PAGES */
-.pg{display:none;flex:1;overflow:hidden;flex-direction:column;}
-.pg.on{display:flex;}
-
-/* HOME */
-.h-hero{text-align:center;padding:12px 0 6px;}
-.h-name{font-size:40px;letter-spacing:7px;text-transform:uppercase;line-height:1;
-  text-shadow:0 0 10px rgba(0,255,136,.9),0 0 30px rgba(0,255,136,.3);}
-.h-role{font-size:13px;letter-spacing:4px;color:rgba(0,255,136,.45);margin-top:2px;}
-.hdiv{width:100%;border:none;border-top:1px solid rgba(0,255,136,.18);margin:6px 0;}
-.h-bio{font-size:13px;line-height:1.5;color:rgba(0,255,136,.78);max-width:380px;
-  margin:0 auto 8px;text-align:center;padding:0 14px;
-  text-shadow:0 0 5px rgba(0,255,136,.5);}
-.tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;padding:0 14px;margin-bottom:8px;}
-.tag{border:1px solid rgba(0,255,136,.35);font-size:10px;padding:1px 6px;letter-spacing:1px;
-  text-shadow:0 0 4px rgba(0,255,136,.5);}
-@keyframes blink{50%{opacity:0;}}
-.bk{animation:blink 1.1s step-end infinite;}
-.prompt{font-size:12px;color:rgba(0,255,136,.35);padding:0 12px 7px;margin-top:auto;}
-
-/* WORK */
-.sec-label{font-size:10px;color:rgba(0,255,136,.3);padding:3px 12px;letter-spacing:2px;flex-shrink:0;}
-.work-grid{
-  display:grid;grid-template-columns:1fr 1fr;gap:6px;
-  padding:0 10px 10px;flex:1;overflow-y:auto;scrollbar-width:none;
+/* Placeholder "[IMG_THUMB]" quando não há imagem */
+.wcard-img-ph{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  color:rgba(0,255,136,.2); /* Quase invisível */
+  letter-spacing:1px;
 }
-.wcard{
-  border:1px solid rgba(0,255,136,.28);padding:6px;cursor:pointer;transition:all .1s;
-}
-.wcard:hover{border-color:#00ff88;background:rgba(0,255,136,.05);}
-.wcard-img{
-  width:100%;padding-top:52%;position:relative;
-  background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.12);
-  margin-bottom:5px;overflow:hidden;
-}
-.wcard-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
-  filter:sepia(1) hue-rotate(95deg) saturate(2.5) brightness(.65);mix-blend-mode:screen;}
-.wcard-img-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-  font-size:9px;color:rgba(0,255,136,.2);letter-spacing:1px;}
-.wcard-title{font-size:13px;letter-spacing:2px;text-transform:uppercase;
-  text-shadow:0 0 5px rgba(0,255,136,.6);}
-.wcard-sub{font-size:10px;color:rgba(0,255,136,.45);margin-top:1px;line-height:1.3;}
-.wcard-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;}
-.wtag{font-size:9px;border:1px solid rgba(0,255,136,.22);padding:0 3px;
-  color:rgba(0,255,136,.45);}
 
-/* PROJECT DETAIL */
+/* Título do projeto no cartão */
+.wcard-title{
+  font-size:13px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  text-shadow:0 0 5px rgba(0,255,136,.6);
+}
+
+/* Descrição curta abaixo do título */
+.wcard-sub{
+  font-size:10px;
+  color:rgba(0,255,136,.45);
+  margin-top:1px;
+  line-height:1.3;
+}
+
+/* Container das tags dentro do cartão */
+.wcard-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:3px;
+  margin-top:3px;
+}
+
+/* Cada tag dentro do cartão (menor que as tags da home) */
+.wtag{
+  font-size:9px;
+  border:1px solid rgba(0,255,136,.22);
+  padding:0 3px;
+  color:rgba(0,255,136,.45);
+}
+
+/* 
+  ══════════════════════════════════════
+  PÁGINA DE DETALHE DO PROJETO
+  ══════════════════════════════════════
+*/
+
+/* Barra superior do detalhe: botão "← WORK" + breadcrumb */
 .det-nav{
-  display:flex;align-items:center;
-  padding:4px 10px;border-bottom:1px solid rgba(0,255,136,.18);
-  flex-shrink:0;gap:8px;
+  display:flex;
+  align-items:center;
+  padding:4px 10px;
+  border-bottom:1px solid rgba(0,255,136,.18);
+  flex-shrink:0;
+  gap:8px;
 }
+
+/* Botão de voltar "← WORK" */
 .backbtn{
-  background:none;border:1px solid rgba(0,255,136,.35);
-  color:#00ff88;font-family:inherit;font-size:11px;padding:1px 7px;
-  cursor:pointer;letter-spacing:1px;text-shadow:0 0 5px rgba(0,255,136,.7);
+  background:none;
+  border:1px solid rgba(0,255,136,.35);
+  color:#00ff88;
+  font-family:inherit;
+  font-size:11px;
+  padding:1px 7px;
+  cursor:pointer;
+  letter-spacing:1px;
+  text-shadow:0 0 5px rgba(0,255,136,.7);
 }
-.backbtn:hover{background:rgba(0,255,136,.09);}
-.breadcrumb{font-size:11px;color:rgba(0,255,136,.45);letter-spacing:1px;}
-.det-body{flex:1;overflow-y:auto;scrollbar-width:none;padding:8px 12px;}
+
+/* Efeito hover no botão voltar */
+.backbtn:hover{
+  background:rgba(0,255,136,.09);
+}
+
+/* "Migalhas de pão" — ex: "WORK / PROJETO ALPHA" */
+.breadcrumb{
+  font-size:11px;
+  color:rgba(0,255,136,.45);
+  letter-spacing:1px;
+}
+
+/* Área de rolagem com o conteúdo do projeto */
+.det-body{
+  flex:1;
+  overflow-y:auto;      /* Permite rolar se o conteúdo for longo */
+  scrollbar-width:none; /* Esconde a barra de rolagem */
+  padding:8px 12px;
+}
+
+/* Imagem principal (hero) do projeto — faixa grande no topo */
 .det-hero{
-  width:100%;height:130px;
-  background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.18);
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;color:rgba(0,255,136,.2);letter-spacing:1px;
-  margin-bottom:7px;overflow:hidden;position:relative;
+  width:100%;
+  height:130px;
+  background:rgba(0,255,136,.05);
+  border:1px solid rgba(0,255,136,.18);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10px;
+  color:rgba(0,255,136,.2);
+  letter-spacing:1px;
+  margin-bottom:7px;
+  overflow:hidden;
+  position:relative;
 }
-.det-hero img{width:100%;height:100%;object-fit:cover;
-  filter:sepia(1) hue-rotate(95deg) saturate(2.5) brightness(.65);mix-blend-mode:screen;}
-.det-title-row{display:flex;align-items:baseline;gap:8px;margin-bottom:4px;}
-.det-title{font-size:18px;letter-spacing:3px;text-transform:uppercase;flex:1;
-  text-shadow:0 0 8px rgba(0,255,136,.8);}
-.det-year{font-size:11px;color:rgba(0,255,136,.35);}
-.det-role{font-size:11px;color:rgba(0,255,136,.45);letter-spacing:1px;margin-bottom:6px;}
-.det-desc{font-size:12px;line-height:1.55;color:rgba(0,255,136,.72);margin-bottom:8px;
-  text-shadow:0 0 4px rgba(0,255,136,.35);}
-.det-gallery{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:8px;}
-.gal-img{aspect-ratio:16/9;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.12);
-  display:flex;align-items:center;justify-content:center;font-size:9px;
-  color:rgba(0,255,136,.18);overflow:hidden;}
-.gal-img img{width:100%;height:100%;object-fit:cover;
-  filter:sepia(1) hue-rotate(95deg) saturate(2.5) brightness(.65);mix-blend-mode:screen;}
-.det-tags-label{font-size:9px;color:rgba(0,255,136,.28);letter-spacing:2px;margin-bottom:4px;}
-.det-tags{display:flex;flex-wrap:wrap;gap:3px;}
 
-/* SKILLS */
-.skills-body{flex:1;padding:6px 12px;overflow-y:auto;scrollbar-width:none;}
-.sk-section{font-size:9px;color:rgba(0,255,136,.3);letter-spacing:2px;margin:7px 0 5px;}
-.sk-item{display:flex;align-items:center;gap:7px;margin-bottom:4px;}
-.sk-name{font-size:12px;letter-spacing:1px;min-width:94px;
-  text-shadow:0 0 4px rgba(0,255,136,.55);}
-.sk-bar{flex:1;height:9px;border:1px solid rgba(0,255,136,.22);position:relative;}
-.sk-fill{height:100%;
-  background:repeating-linear-gradient(90deg,#00ff88 0,#00ff88 5px,rgba(0,255,136,.25) 5px,rgba(0,255,136,.25) 7px);
-  box-shadow:0 0 5px rgba(0,255,136,.35);}
-.sk-pct{font-size:10px;color:rgba(0,255,136,.45);min-width:26px;text-align:right;}
+/* Imagem dentro do hero (quando ela existe) */
+.det-hero img{
+  width:100%;height:100%;
+  object-fit:cover;
+  filter:sepia(1) hue-rotate(95deg) saturate(2.5) brightness(.65); /* Efeito CRT */
+  mix-blend-mode:screen;
+}
 
-/* ABOUT */
-.about-body{flex:1;padding:8px 12px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;scrollbar-width:none;}
-.ab-header{display:flex;gap:10px;align-items:flex-start;}
-.ab-photo{width:72px;height:72px;border:1px solid rgba(0,255,136,.38);flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:28px;
-  color:rgba(0,255,136,.2);overflow:hidden;}
-.ab-photo img{width:100%;height:100%;object-fit:cover;
-  filter:sepia(1) hue-rotate(95deg) saturate(3) brightness(.6);mix-blend-mode:screen;}
-.ab-name{font-size:18px;letter-spacing:3px;text-transform:uppercase;
-  text-shadow:0 0 6px rgba(0,255,136,.7);}
-.ab-sub{font-size:10px;color:rgba(0,255,136,.4);letter-spacing:2px;margin-top:1px;}
-.ab-bio{font-size:11px;color:rgba(0,255,136,.65);line-height:1.5;margin-top:5px;
-  text-shadow:0 0 4px rgba(0,255,136,.35);}
-.ab-links{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
-.alink{font-size:10px;border:1px solid rgba(0,255,136,.3);padding:1px 6px;
-  letter-spacing:1px;cursor:pointer;color:#00ff88;
-  text-shadow:0 0 4px rgba(0,255,136,.5);}
-.alink:hover{background:rgba(0,255,136,.08);}
-.tl{border-top:1px solid rgba(0,255,136,.14);padding-top:6px;}
-.tl-item{display:flex;gap:8px;margin-bottom:3px;font-size:10px;}
-.tl-y{color:rgba(0,255,136,.32);min-width:34px;}
-.tl-t{color:rgba(0,255,136,.55);}
+/* Linha com título e ano: "PROJETO ALPHA" + "2024" */
+.det-title-row{
+  display:flex;
+  align-items:baseline; /* Alinha pela linha de base do texto */
+  gap:8px;
+  margin-bottom:4px;
+}
 
-/* CONTACT */
-.contact-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;gap:12px;}
-.ct-title{font-size:24px;letter-spacing:5px;text-transform:uppercase;
-  text-shadow:0 0 8px rgba(0,255,136,.8);}
-.ct-row{text-align:center;}
-.ct-label{font-size:9px;color:rgba(0,255,136,.28);letter-spacing:2px;}
-.ct-val{font-size:13px;letter-spacing:2px;color:rgba(0,255,136,.72);
-  border-bottom:1px solid rgba(0,255,136,.18);padding-bottom:4px;min-width:220px;
-  text-shadow:0 0 5px rgba(0,255,136,.45);}
-.ct-avail{font-size:10px;color:rgba(0,255,136,.28);letter-spacing:2px;}
+/* Título grande do projeto */
+.det-title{
+  font-size:18px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  flex:1; /* Ocupa o espaço restante */
+  text-shadow:0 0 8px rgba(0,255,136,.8);
+}
 
-/* TV CONTROLS BAR */
+/* Ano do projeto (ex: "2024") — menor e mais apagado */
+.det-year{
+  font-size:11px;
+  color:rgba(0,255,136,.35);
+}
+
+/* Role/função no projeto (ex: "// LEAD DESIGNER") */
+.det-role{
+  font-size:11px;
+  color:rgba(0,255,136,.45);
+  letter-spacing:1px;
+  margin-bottom:6px;
+}
+
+/* Descrição completa do projeto */
+.det-desc{
+  font-size:12px;
+  line-height:1.55; /* 1.55x o tamanho da fonte — boa legibilidade */
+  color:rgba(0,255,136,.72);
+  margin-bottom:8px;
+  text-shadow:0 0 4px rgba(0,255,136,.35);
+}
+
+/* Grade de 3 imagens na galeria do projeto */
+.det-gallery{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr; /* 3 colunas iguais */
+  gap:4px;
+  margin-bottom:8px;
+}
+
+/* Cada item da galeria (proporção 16:9 — como vídeos) */
+.gal-img{
+  aspect-ratio:16/9;  /* Mantém proporção 16:9 automaticamente */
+  background:rgba(0,255,136,.05);
+  border:1px solid rgba(0,255,136,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:9px;
+  color:rgba(0,255,136,.18);
+  overflow:hidden;
+}
+
+/* Imagem dentro de cada slot da galeria */
+.gal-img img{
+  width:100%;height:100%;
+  object-fit:cover;
+  filter:sepia(1) hue-rotate(95deg) saturate(2.5) brightness(.65);
+  mix-blend-mode:screen;
+}
+
+/* Label "// TECNOLOGIAS //" acima das tags */
+.det-tags-label{
+  font-size:9px;
+  color:rgba(0,255,136,.28);
+  letter-spacing:2px;
+  margin-bottom:4px;
+}
+
+/* Container das tags de tecnologia */
+.det-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:3px;
+}
+
+/* 
+  ══════════════════════════════════════
+  PÁGINA CONTACT (CONTATO)
+  ══════════════════════════════════════
+*/
+
+/* Container centralizado da página de contato */
+.contact-body{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;    /* Centraliza horizontalmente */
+  justify-content:center; /* Centraliza verticalmente */
+  padding:10px;
+  gap:12px; /* 12px entre cada campo */
+}
+
+/* Título "CONTATO" */
+.ct-title{
+  font-size:24px;
+  letter-spacing:5px;
+  text-transform:uppercase;
+  text-shadow:0 0 8px rgba(0,255,136,.8);
+}
+
+/* Container de cada campo (label + valor) */
+.ct-row{
+  text-align:center;
+}
+
+/* Label do campo (ex: "EMAIL") */
+.ct-label{
+  font-size:9px;
+  color:rgba(0,255,136,.28);
+  letter-spacing:2px;
+}
+
+/* Valor do campo (ex: "alex@studio.com") */
+.ct-val{
+  font-size:13px;
+  letter-spacing:2px;
+  color:rgba(0,255,136,.72);
+  border-bottom:1px solid rgba(0,255,136,.18); /* Linha sublinhada */
+  padding-bottom:4px;
+  min-width:220px;
+  text-shadow:0 0 5px rgba(0,255,136,.45);
+}
+
+/* Texto "DISPONÍVEL PARA FREELANCE ▊" */
+.ct-avail{
+  font-size:10px;
+  color:rgba(0,255,136,.28);
+  letter-spacing:2px;
+}
+
+/* Faixa na parte inferior da frente da TV: logo da marca + botões/knobs */
 .tv-ctrl{
-  height:52px;display:flex;align-items:center;
-  padding:0 18px;flex-shrink:0;
-  border-top:1px solid rgba(255,255,255,.025);gap:8px;
+  height:52px;
+  display:flex;
+  align-items:center;
+  padding:0 18px;
+  flex-shrink:0;
+  border-top:1px solid rgba(0, 0, 0, 0);
+  gap:8px;
 }
-.tv-brand{flex:1;font-family:'VT323',monospace;color:#3a3835;
-  font-size:14px;letter-spacing:3px;text-transform:uppercase;}
-.spk-grid{display:grid;grid-template-columns:repeat(5,3px);gap:2px;margin-right:6px;}
-.spk-dot{width:3px;height:3px;border-radius:50%;background:#1e1c1a;}
-.led{width:7px;height:7px;border-radius:50%;background:#00ff88;
-  box-shadow:0 0 6px #00ff88,0 0 12px rgba(0,255,136,.4);}
-.knob{border-radius:50%;
-  background:radial-gradient(circle at 35% 30%,#555 0%,#2a2825 50%,#191714 100%);
-  border:2px solid #242220;
-  box-shadow:0 2px 5px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.05);}
+
+
 </style>
 
+<!--
+  ============================================================
+  HTML — ESTRUTURA DA PÁGINA
+  ============================================================
+  Agora vem o HTML: as "caixas" que compõem a tela.
+  Cada <div> é um contêiner invisível que organizamos com CSS.
+  "class=" associa as regras de estilo que escrevemos acima.
+  ============================================================
+-->
+
+<!-- 
+  O "palco" escuro onde a TV está posicionada.
+  A classe "scene" aplica o fundo degradê e centraliza a TV.
+-->
 <div class="scene">
+
+  <!-- 
+    Container de perspectiva 3D.
+    É um pai neutro que aplica o efeito de profundidade no filho .tv-3d.
+  -->
   <div class="tv-perspective">
+
+    <!-- 
+      A TV em si — rotacionada em X e Y para dar aquela vista 3/4.
+      Contém as 4 faces laterais + a frente.
+    -->
     <div class="tv-3d">
 
-      <div class="tv-top"></div>
-      <div class="tv-right"></div>
-      <div class="tv-left"></div>
-      <div class="tv-bottom-face"></div>
-
-      <!-- FRONT FACE -->
+      <!-- 
+        FRENTE DA TV — o elemento principal.
+        Contém: a tela + os controles embaixo.
+      -->
       <div class="tv-front">
 
+        <!-- Área onde a tela fica dentro da carcaça da TV -->
         <div class="screen-section">
+
+          <!-- Moldura preta ao redor da tela -->
           <div class="screen-bezel">
+
+            <!-- A tela em si — vidro escuro do monitor -->
             <div class="screen">
+
+              <!-- Fundo esverdeado da tela (o fósforo do tubo) -->
               <div class="scr-bg"></div>
+
+              <!-- Camada que aplica a animação de piscada/flicker -->
               <div class="flicker-layer"></div>
+
+              <!-- Faixa luminosa que desce pela tela (beam do CRT) -->
               <div class="scan-roll"></div>
+
+              <!-- Grade de linhas horizontais (efeito scanlines do CRT) -->
               <div class="scanlines"></div>
+
+              <!-- Escurecimento nas bordas da tela (vinheta) -->
               <div class="vignette"></div>
 
+              <!--
+                O CONTEÚDO DA TELA — tudo que o usuário lê e clica.
+                É como um "sistema operacional" dentro da TV.
+              -->
               <div class="crt">
 
-                <!-- NAV -->
+                <!-- 
+                  BARRA DE NAVEGAÇÃO
+                  Cada botão chama a função JavaScript "sp()" quando clicado.
+                  "sp" = "show page" (mostrar página).
+                  "onclick" = o que acontece ao clicar.
+                  "this" = referência ao próprio botão clicado.
+                -->
                 <div class="nav">
+                  <!-- Logo do portfólio — texto estático -->
                   <span class="nav-logo">▶ WEBSITE.EXE</span>
-                  <button class="nb on" onclick="sp('home',this)">HOME</button>
-                  <button class="nb" onclick="sp('work',this)">WORK</button>
-                  <button class="nb" onclick="sp('skills',this)">SKILLS</button>
-                  <button class="nb" onclick="sp('about',this)">ABOUT</button>
-                  <button class="nb" onclick="sp('contact',this)">CONTACT</button>
+
+                  <!-- Botão HOME — "on" = ativo por padrão -->
+                  <button class="nb on" onclick="sp('home',this)">LINKS</button>
+
+                  <!-- Botão WORK — ao clicar, mostra a página de projetos -->
+                  <button class="nb" onclick="sp('work',this)">PROJETOS</button>
+
+                  <!-- Botão CONTACT — ao clicar, mostra o contato -->
+                  <button class="nb" onclick="sp('contact',this)">CONTATO</button>
+                </div>
+                
+                <!-- Instrução para o usuário navegar -->
+                <div class="tags" style="margin-top:4px;">
+                  <!-- "style=" inline sobrescreve/adiciona CSS diretamente no elemento -->
+                  <span style="font-size:11px;color:rgba(0,255,136,.3);letter-spacing:1px;">
+                    [ NAVEGUE PELAS ABAS ACIMA ]
+                  </span>
                 </div>
 
-                <!-- HOME -->
                 <div class="pg on" id="pg-home">
+                  <!-- Bloco central com nome e título -->
                   <div class="h-hero">
+                    <!-- Nome principal do portfólio -->
                     <div class="h-name">NOC</div>
-                    <div class="h-role">// WEBSITE //</div>
+                    <!-- Subtítulo com profissões -->
+                    <div class="h-role">otatnoc.tis@gmail.com</div>
                   </div>
-                  <hr class="hdiv">
-                  <p class="h-bio">Criando experiências digitais.<br>UI/UX, motion design.</p>
-                  <div class="tags">
-                    <span class="tag">DAVINCI RESOLVE</span><span class="tag">BLENDER</span><span class="tag">FL STUDIO</span>
-                    <span class="tag">UNITY</span>
-                  </div>
-                  <div class="tags" style="margin-top:4px;">
-                    <span style="font-size:11px;color:rgba(0,255,136,.3);letter-spacing:1px;">[ NAVEGUE PELAS SEÇÕES ACIMA ]</span>
-                  </div>
-                  <div class="prompt">C:\WEBSITE&gt; <span class="bk">█</span></div>
-                </div>
 
-                <!-- WORK -->
+                  <!-- Linha divisória horizontal -->
+                  <hr class="hdiv">
+
+                  <!-- Texto de apresentação -->
+                  <p class="h-bio">
+                    Não costumo usar redes sociais<br>
+                    apenas tenho
+                  </p>
+
+                  <!-- Tags de habilidades principais -->
+                  <div class="tags">
+                    <span class="tag">YOUTUBE</span>
+                    <span class="tag">X/TWITTER</span>
+                    <span class="tag">INSTAGRAM</span>
+                    <span class="tag">TWITCH</span>
+                    <span class="tag">STEAM</span>
+                    <span class="tag">PLAYLIST</span>
+                  </div>
+
+
+                  <!-- Linha de "prompt" de terminal com cursor piscando -->
+                  <div class="prompt">
+                    C:\PORTFOLIO&gt; <!-- "&gt;" é o símbolo ">" em HTML seguro -->
+                    <span class="bk">█</span> <!-- .bk aplica a animação de piscar -->
+                  </div>
+
+                </div><!-- Fim da página HOME -->
+
+                <!-- 
+                  ════════════════════
+                  PÁGINA WORK (PROJETOS)
+                  Sem "on" → escondida por padrão.
+                  ════════════════════
+                -->
                 <div class="pg" id="pg-work">
-                  <div class="sec-label">// PROJETOS — CLIQUE PARA VER DETALHES //</div>
+
+                  <!-- Subtítulo da seção -->
+                  <div class="sec-label">PROJETOS - CLIQUE PARA VER DETALHES</div>
+
+                  <!-- Grade 2x2 de cartões de projeto -->
                   <div class="work-grid">
 
+                    <!-- 
+                      Cartão 1: PROJETO ALPHA.
+                      "onclick='op(0)'" chama a função JavaScript "op" (open project)
+                      com o índice 0 (primeiro projeto do array "projects").
+                    -->
                     <div class="wcard" onclick="op(0)">
+                      <!-- Container da imagem thumbnail -->
                       <div class="wcard-img">
-                        <!-- <img src="URL_THUMBNAIL_1" alt=""> -->
+                        <!-- 
+                          Para adicionar uma imagem real, descomente a linha abaixo
+                          e substitua "URL_THUMBNAIL_1" pelo endereço da imagem:
+                          <img src="URL_THUMBNAIL_1" alt="">
+                        -->
+                        <!-- Placeholder mostrado quando não há imagem -->
                         <div class="wcard-img-ph">[IMG_THUMB]</div>
                       </div>
-                      <div class="wcard-title">PROJETO ALPHA</div>
-                      <div class="wcard-sub">App de finanças com dashboard em tempo real.</div>
-                      <div class="wcard-tags"><span class="wtag">UI/UX</span><span class="wtag">REACT</span></div>
+                      <!-- Título do projeto -->
+                      <div class="wcard-title">AMDUC</div>
+                      <!-- Descrição breve -->
+                      <div class="wcard-sub">Em breve</div>
+                      <!-- Tags de tecnologia -->
+                      <div class="wcard-tags">
+                        <span class="wtag">DAVINCI RESOLVE</span>
+                      </div>
                     </div>
 
+                    <!-- Cartão 2: NEON BRAND (índice 1) -->
                     <div class="wcard" onclick="op(1)">
                       <div class="wcard-img">
                         <!-- <img src="URL_THUMBNAIL_2" alt=""> -->
                         <div class="wcard-img-ph">[IMG_THUMB]</div>
                       </div>
-                      <div class="wcard-title">NEON BRAND</div>
-                      <div class="wcard-sub">Identidade visual para startup de tech.</div>
-                      <div class="wcard-tags"><span class="wtag">BRANDING</span><span class="wtag">MOTION</span></div>
+                      <div class="wcard-title">PEISH</div>
+                      <div class="wcard-sub">Em breve</div>
+                      <div class="wcard-tags">
+                        <span class="wtag">BLENDER</span>
+                        <span class="wtag">FL STUDIO</span>
+                      </div>
                     </div>
 
+                    <!-- Cartão 3: 3D UNIVERSE (índice 2) -->
                     <div class="wcard" onclick="op(2)">
                       <div class="wcard-img">
                         <!-- <img src="URL_THUMBNAIL_3" alt=""> -->
                         <div class="wcard-img-ph">[IMG_THUMB]</div>
                       </div>
-                      <div class="wcard-title">3D UNIVERSE</div>
-                      <div class="wcard-sub">Ambiente 3D interativo em Three.js.</div>
-                      <div class="wcard-tags"><span class="wtag">THREE.JS</span><span class="wtag">BLENDER</span></div>
+                      <div class="wcard-title">PS2</div>
+                      <div class="wcard-sub">Em breve</div>
+                      <div class="wcard-tags">
+                        <span class="wtag">DAVINCI RESOLVE</span>
+                        <span class="wtag">OPL</span>
+                      </div>
                     </div>
 
+                    <!-- Cartão 4: DATA VIZ (índice 3) -->
                     <div class="wcard" onclick="op(3)">
                       <div class="wcard-img">
                         <!-- <img src="URL_THUMBNAIL_4" alt=""> -->
                         <div class="wcard-img-ph">[IMG_THUMB]</div>
                       </div>
-                      <div class="wcard-title">DATA VIZ</div>
-                      <div class="wcard-sub">Dashboard analytics corporativo.</div>
-                      <div class="wcard-tags"><span class="wtag">D3.JS</span><span class="wtag">DATA</span></div>
+                      <div class="wcard-title">S.T.P.M.</div>
+                      <div class="wcard-sub">Em breve</div>
+                      <div class="wcard-tags">
+                        <span class="wtag">ROTEIRO</span>
+                        <span class="wtag">DESENHO</span>
+                      </div>
+                      
                     </div>
 
-                  </div>
-                </div>
+                     <!-- Cartão 4: DATA VIZ (índice 3) -->
+                    <div class="wcard" onclick="op(3)">
+                      <div class="wcard-img">
+                        <!-- <img src="URL_THUMBNAIL_4" alt=""> -->
+                        <div class="wcard-img-ph">[IMG_THUMB]</div>
+                      </div>
+                      <div class="wcard-title">P.I.S.N.</div>
+                      <div class="wcard-sub">Em breve</div>
+                      <div class="wcard-tags">
+                        <span class="wtag">ROTEIRO</span>
+                        <span class="wtag">ANIMAÇÃO</span>
+                      </div>
+                      
+                    </div>
 
-                <!-- PROJECT DETAIL -->
+                     <!-- Cartão 4: DATA VIZ (índice 3) -->
+                    <div class="wcard" onclick="op(3)">
+                      <div class="wcard-img">
+                        <!-- <img src="URL_THUMBNAIL_4" alt=""> -->
+                        <div class="wcard-img-ph">[IMG_THUMB]</div>
+                      </div>
+                      <div class="wcard-title">WEBSITE</div>
+                      <div class="wcard-sub">Portfólio e informações em geral</div>
+                      <div class="wcard-tags">
+                        <span class="wtag">HTML</span>
+                      </div>
+                      
+                    </div>
+
+                  </div><!-- Fim da grade de projetos -->
+                </div><!-- Fim da página WORK -->
+
+                <!-- 
+                  ════════════════════
+                  PÁGINA DE DETALHE DO PROJETO
+                  Gerada dinamicamente via JavaScript quando um projeto é clicado.
+                  Os elementos com "id=" são preenchidos pelo JS.
+                  ════════════════════
+                -->
                 <div class="pg" id="pg-detail">
+
+                  <!-- Barra com botão voltar e breadcrumb -->
                   <div class="det-nav">
-                    <button class="backbtn" onclick="closeProj()">← WORK</button>
-                    <span class="breadcrumb">WORK / <span id="det-bc">PROJETO</span></span>
+                    <!-- Botão que chama closeProj() — volta para a lista de projetos -->
+                    <button class="backbtn" onclick="closeProj()">VOLTAR</button>
+                    <!-- Breadcrumb: "WORK / NOME DO PROJETO" -->
+                    <!-- "det-bc" é preenchido pelo JavaScript com o nome do projeto -->
+                    <span class="breadcrumb">PROJETO <span id="det-bc">PROJETO</span></span>
                   </div>
+
+                  <!-- Área de scroll com os detalhes do projeto -->
                   <div class="det-body">
+
+                    <!-- 
+                      Imagem hero — preenchida pelo JS.
+                      id="det-hero" permite o JavaScript encontrar e modificar este elemento.
+                    -->
                     <div class="det-hero" id="det-hero">
-                      <!-- A imagem hero do projeto vai aqui — coloque a URL em projects[].heroImg -->
+                      <!-- Texto padrão antes do JS preencher com a imagem real -->
                       <span>[IMG_HERO — cole URL em projects[n].heroImg]</span>
                     </div>
+
+                    <!-- Linha com título e ano (preenchidos pelo JS) -->
                     <div class="det-title-row">
-                      <div class="det-title" id="det-title">PROJETO</div>
-                      <div class="det-year" id="det-year">2024</div>
+                      <div class="det-title" id="det-title">PROJETO</div> <!-- JS altera o texto aqui -->
+                      <div class="det-year" id="det-year">2024</div>      <!-- JS altera o ano aqui -->
                     </div>
+
+                    <!-- Role do projeto (preenchido pelo JS) -->
                     <div class="det-role" id="det-role">// ROLE //</div>
+
+                    <!-- Descrição completa (preenchida pelo JS) -->
                     <div class="det-desc" id="det-desc">Descrição completa do projeto.</div>
 
+                    <!-- Label da galeria -->
                     <div class="sec-label" style="padding:0;margin-bottom:4px;">// GALERIA //</div>
+
+                    <!-- Grade de imagens — innerHTML é substituído pelo JS -->
                     <div class="det-gallery" id="det-gallery">
+                      <!-- JS coloca as imagens aqui dinamicamente -->
                       <div class="gal-img"><span>[IMG_1]</span></div>
                       <div class="gal-img"><span>[IMG_2]</span></div>
                       <div class="gal-img"><span>[IMG_3]</span></div>
                     </div>
 
+                    <!-- Label das tecnologias -->
                     <div class="det-tags-label">// TECNOLOGIAS //</div>
+
+                    <!-- Container das tags — preenchido pelo JS -->
                     <div class="det-tags" id="det-tags"></div>
-                  </div>
-                </div>
 
-                <!-- SKILLS -->
-                <div class="pg" id="pg-skills">
-                  <div class="sec-label">// HABILIDADES //</div>
-                  <div class="skills-body">
-                    <div class="sk-section">DESIGN</div>
-                    <div class="sk-item"><span class="sk-name">UI/UX DESIGN</span><div class="sk-bar"><div class="sk-fill" style="width:92%"></div></div><span class="sk-pct">92%</span></div>
-                    <div class="sk-item"><span class="sk-name">MOTION</span><div class="sk-bar"><div class="sk-fill" style="width:85%"></div></div><span class="sk-pct">85%</span></div>
-                    <div class="sk-item"><span class="sk-name">BLENDER 3D</span><div class="sk-bar"><div class="sk-fill" style="width:78%"></div></div><span class="sk-pct">78%</span></div>
-                    <div class="sk-item"><span class="sk-name">FIGMA</span><div class="sk-bar"><div class="sk-fill" style="width:95%"></div></div><span class="sk-pct">95%</span></div>
-                    <div class="sk-section">DESENVOLVIMENTO</div>
-                    <div class="sk-item"><span class="sk-name">REACT</span><div class="sk-bar"><div class="sk-fill" style="width:88%"></div></div><span class="sk-pct">88%</span></div>
-                    <div class="sk-item"><span class="sk-name">THREE.JS</span><div class="sk-bar"><div class="sk-fill" style="width:72%"></div></div><span class="sk-pct">72%</span></div>
-                    <div class="sk-item"><span class="sk-name">NODE.JS</span><div class="sk-bar"><div class="sk-fill" style="width:75%"></div></div><span class="sk-pct">75%</span></div>
-                    <div class="sk-item"><span class="sk-name">D3.JS</span><div class="sk-bar"><div class="sk-fill" style="width:68%"></div></div><span class="sk-pct">68%</span></div>
-                    <div class="sk-section">FERRAMENTAS</div>
-                    <div class="sk-item"><span class="sk-name">GIT</span><div class="sk-bar"><div class="sk-fill" style="width:90%"></div></div><span class="sk-pct">90%</span></div>
-                    <div class="sk-item"><span class="sk-name">PREMIERE</span><div class="sk-bar"><div class="sk-fill" style="width:70%"></div></div><span class="sk-pct">70%</span></div>
-                    <div class="sk-item"><span class="sk-name">AFTER EFFECTS</span><div class="sk-bar"><div class="sk-fill" style="width:80%"></div></div><span class="sk-pct">80%</span></div>
-                  </div>
-                </div>
+                  </div><!-- Fim det-body -->
+                </div><!-- Fim da página DETAIL -->
 
-                <!-- ABOUT -->
-                <div class="pg" id="pg-about">
-                  <div class="about-body">
-                    <div class="ab-header">
-                      <div class="ab-photo">
-                        <!-- <img src="URL_FOTO" alt=""> -->
-                        <span style="opacity:.22;font-size:30px;">&#9786;</span>
-                      </div>
-                      <div>
-                        <div class="ab-name">@noctist_t</div>
-                        <div class="ab-sub">SÃO PAULO · BR</div>
-                        <p class="ab-bio">Designer e dev apaixonado pela interseção entre arte e código. Formado em Design pela UFRJ, 6+ anos criando produtos digitais.</p>
-                        <div class="ab-links">
-                          <span class="alink">GITHUB</span>
-                          <span class="alink">LINKEDIN</span>
-                          <span class="alink">BEHANCE</span>
-                          <span class="alink">DRIBBBLE</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="tl">
-                      <div class="tl-item"><span class="tl-y">2024</span><span class="tl-t">Lead Designer — Startup XYZ</span></div>
-                      <div class="tl-item"><span class="tl-y">2022</span><span class="tl-t">Senior UI — Agência Digital (40+ projetos)</span></div>
-                      <div class="tl-item"><span class="tl-y">2020</span><span class="tl-t">Freelancer — branding & motion global</span></div>
-                      <div class="tl-item"><span class="tl-y">2018</span><span class="tl-t">Primeiro projeto: app mobile delivery</span></div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- CONTACT -->
+                <!-- 
+                  ════════════════════
+                  PÁGINA CONTACT (CONTATO)
+                  ════════════════════
+                -->
                 <div class="pg" id="pg-contact">
                   <div class="contact-body">
+
+                    <!-- Título da seção -->
                     <div class="ct-title">CONTATO</div>
-                    <div class="ct-row"><div class="ct-label">EMAIL</div><div class="ct-val">otatnoc.tis@gmail.com</div></div>
-                    <div class="ct-row"><div class="ct-label">WHATSAPP</div><div class="ct-val">+55 11 99999-0000</div></div>
-                    <div class="ct-row"><div class="ct-label">LOCALIZAÇÃO</div><div class="ct-val">SÃO PAULO, BR</div></div>
-                    <div class="ct-avail">DISPONÍVEL PARA FREELANCE <span class="bk">█</span></div>
-                  </div>
-                </div>
 
-              </div><!-- /crt -->
-            </div><!-- /screen -->
-          </div><!-- /bezel -->
-        </div><!-- /screen-section -->
+                    <!-- Campo de email -->
+                    <div class="ct-row">
+                      <div class="ct-label">EMAIL</div>
+                      <div class="ct-val">otatnoc.tis@gmail.com</div>
+                    </div>
 
-        <!-- TV CONTROLS -->
+                    <!-- Status de disponibilidade com cursor piscando -->
+                    <div class="ct-avail">
+                      <div class="ct-label">d8b...db..,ooo,...,ooo,.</div>
+                      <div class="ct-label">888o..88.d8'.`8b.d8'.`Y8</div>
+                      <div class="ct-label">88V8o.88.88...88.88.....</div>
+                      <div class="ct-label">88.V8o88.88...88.88.....</div>
+                      <div class="ct-label">88..V888.88...88.88...o8</div>
+                      <div class="ct-label">VP...V8P.`Y8b8P'.`Y8b8P'.<span class="bk">█</span>
+                 
+                    </div>
+
+                  </div><!-- Fim contact-body -->
+                </div><!-- Fim da página CONTACT -->
+
+              </div><!-- Fim .crt (conteúdo da tela) -->
+            </div><!-- Fim .screen (a tela em si) -->
+          </div><!-- Fim .screen-bezel (moldura da tela) -->
+        </div><!-- Fim .screen-section (área da tela na TV) -->
+
+        <!-- 
+          BARRA DE CONTROLES FÍSICA DA TV (parte de baixo da frente)
+          Decorativa — imita os controles de uma TV vintage.
+        -->
         <div class="tv-ctrl">
+
+          <!-- Grade de bolinhas imitando o alto-falante -->
           <div class="spk-grid">
+            <!-- 20 bolinhas = 4 linhas x 5 colunas de pontos do alto-falante -->
             <div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div>
             <div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div>
             <div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div>
             <div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div><div class="spk-dot"></div>
           </div>
-          <div class="tv-brand">PHOSPHOR · 22</div>
-          <div class="led"></div>
-          <div class="knob" style="width:22px;height:22px;margin-left:4px;"></div>
-          <div class="knob" style="width:16px;height:16px;"></div>
-        </div>
 
-      </div><!-- /tv-front -->
-    </div><!-- /tv-3d -->
-  </div><!-- /perspective -->
-</div><!-- /scene -->
 
+        </div><!-- Fim .tv-ctrl -->
+
+      </div><!-- Fim .tv-front -->
+    </div><!-- Fim .tv-3d -->
+  </div><!-- Fim .tv-perspective -->
+</div><!-- Fim .scene -->
+
+<!--
+  ============================================================
+  JAVASCRIPT — O COMPORTAMENTO (o que acontece quando você interage)
+  ============================================================
+  JavaScript é uma linguagem de programação que roda no navegador.
+  Ele lê e modifica o HTML em tempo real — sem recarregar a página.
+  
+  Tudo dentro de <script>...</script> é código JavaScript.
+  ============================================================
+-->
 <script>
+
+/*
+  ══════════════════════════════════════════════════════════════
+  BANCO DE DADOS DOS PROJETOS
+  ══════════════════════════════════════════════════════════════
+  "const" declara uma variável constante (não pode ser reatribuída).
+  "projects" é o nome que demos a essa variável.
+  "[ ]" delimitam um ARRAY (lista) — uma coleção de itens.
+  Cada item é um OBJETO "{ }" com propriedades (chave: valor).
+  
+  Para personalizar: edite os textos entre aspas e cole as URLs das imagens.
+*/
 const projects = [
+
+  /* Projeto de índice 0 — o primeiro */
   {
-    title:"PROJETO ALPHA", year:"2024", role:"// LEAD DESIGNER & FRONT-END DEV",
-    desc:"App de finanças pessoais com dashboard interativo e gráficos em tempo real. Desenvolvido em React com integração a APIs bancárias. Design centrado em acessibilidade e clareza de dados financeiros complexos para o usuário final.",
-    heroImg:"",       // ← Cole aqui a URL da imagem principal do projeto
-    gallery:["","",""], // ← Cole aqui as URLs de 3 imagens da galeria
-    tags:["UI/UX","REACT","TYPESCRIPT","CHART.JS","FIGMA"]
+    title:"AMDUC",   /* Nome do projeto */
+    year:"202*",             /* Ano de realização */
+    role:"Em breve", /* Função exercida */
+    desc:"Descrição", /* Descrição longa */
+    heroImg:"",       /* ← Cole aqui a URL da imagem principal (deixe "" para sem imagem) */
+    gallery:["","",""], /* ← Lista de 3 URLs para imagens da galeria */
+    tags:["DAVINCI RESOLVE"] /* Tecnologias usadas */
   },
+
+  /* Projeto de índice 1 */
   {
-    title:"NEON BRAND", year:"2023", role:"// BRAND DESIGNER & MOTION",
-    desc:"Identidade visual completa para startup de IA: logotipo, sistema de cores, tipografia, guia de marca e motion design para redes sociais. Projeto abrangeu desde o naming até o design system completo.",
+    title:"PEISH",
+    year:"202*",
+    role:"Em breve",
+    desc:"Descrição",
     heroImg:"",
     gallery:["","",""],
-    tags:["BRANDING","MOTION DESIGN","AFTER EFFECTS","ILLUSTRATOR"]
+    tags:["BLENDER","FL STUDIO"]
   },
+
+  /* Projeto de índice 2 */
   {
-    title:"3D UNIVERSE", year:"2023", role:"// 3D DEVELOPER & DESIGNER",
-    desc:"Ambiente 3D interativo em Three.js e Blender para experiência imersiva de produto. Modelos otimizados para web com shaders GLSL customizados. O usuário navega pelo espaço virtual e interage com elementos em tempo real.",
+    title:"PS2",
+    year:"2026",
+    role:"Em breve",
+    desc:"Descrição",
     heroImg:"",
     gallery:["","",""],
-    tags:["THREE.JS","BLENDER","GLSL SHADERS","WEBGL"]
+    tags:["DAVINCI RESOLVE"]
   },
+
+  /* Projeto de índice 3 — o último */
   {
-    title:"DATA VIZ", year:"2024", role:"// UI/UX + DATA DESIGNER",
-    desc:"Dashboard de analytics corporativo com 30+ tipos de gráficos customizados via D3.js, filtros em tempo real, drill-down em dados e exportação de relatórios. Integrado a pipeline de dados em Node.js.",
+    title:"S.T.P.M.",
+    year:"202*",
+    role:"Em breve",
+    desc:"Descrição",
     heroImg:"",
     gallery:["","",""],
-    tags:["D3.JS","REACT","DATA VIZ","NODE.JS","POSTGRESQL"]
+    tags:["ROTEIRO","DESENHO"]
   }
-];
+]; /* Fim do array de projetos */
 
+
+/*
+  ══════════════════════════════════════════════════════════════
+  FUNÇÃO: sp (show page) — NAVEGAR ENTRE PÁGINAS
+  ══════════════════════════════════════════════════════════════
+  
+  "function" declara uma função — um bloco de código reutilizável.
+  Parâmetros: "id" (qual página mostrar) e "btn" (qual botão foi clicado).
+  
+  Como funciona:
+  1. Esconde TODAS as páginas
+  2. Remove o destaque de TODOS os botões
+  3. Mostra a página solicitada
+  4. Destaca o botão clicado
+*/
 function sp(id, btn) {
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('pg-'+id).classList.add('on');
-  if(btn) btn.classList.add('on');
-}
 
+  /*
+    "document" é o objeto que representa toda a página HTML.
+    ".querySelectorAll('.pg')" = busca TODOS os elementos com classe "pg".
+    Retorna uma NodeList (lista de elementos do HTML).
+    ".forEach()" percorre cada elemento da lista e executa uma função.
+    "p => p.classList.remove('on')" = para cada página "p", remove a classe "on".
+    Sem "on", a regra CSS "display:none" entra em ação → página some.
+  */
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+
+  /* Mesma lógica: remove "on" de todos os botões → todos ficam sem destaque */
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+
+  /*
+    "document.getElementById('pg-'+id)" = busca o elemento pelo ID.
+    Se id='home', busca 'pg-home'. Se id='work', busca 'pg-work'. Etc.
+    ".classList.add('on')" = adiciona a classe "on" → a página aparece (display:flex).
+  */
+  document.getElementById('pg-' + id).classList.add('on');
+
+  /*
+    Se um botão foi passado (btn não é null/undefined), adiciona "on" nele.
+    Isso destaca o botão ativo na barra de navegação.
+  */
+  if(btn) btn.classList.add('on');
+
+} /* Fim da função sp */
+
+
+/*
+  ══════════════════════════════════════════════════════════════
+  FUNÇÃO: op (open project) — ABRIR DETALHE DE UM PROJETO
+  ══════════════════════════════════════════════════════════════
+  
+  Parâmetro: "idx" = índice do projeto no array (0, 1, 2 ou 3).
+  
+  Pega os dados do projeto, preenche os elementos HTML do detalhe,
+  e navega para a página de detalhe.
+*/
 function op(idx) {
+
+  /*
+    "const p = projects[idx]" = pega o projeto pelo índice.
+    Se idx=0, pega o primeiro projeto (PROJETO ALPHA).
+    Agora "p" é um atalho para aquele objeto — mais fácil de usar.
+  */
   const p = projects[idx];
+
+  /*
+    "document.getElementById('det-bc')" = encontra o elemento com id="det-bc".
+    ".textContent = p.title" = muda o texto desse elemento para o título do projeto.
+    Isso atualiza o breadcrumb: "WORK / PROJETO ALPHA".
+  */
   document.getElementById('det-bc').textContent = p.title;
+
+  /* Atualiza o título grande do projeto */
   document.getElementById('det-title').textContent = p.title;
+
+  /* Atualiza o ano (ex: "2024") */
   document.getElementById('det-year').textContent = p.year;
+
+  /* Atualiza a função exercida (ex: "// LEAD DESIGNER") */
   document.getElementById('det-role').textContent = p.role;
+
+  /* Atualiza a descrição longa do projeto */
   document.getElementById('det-desc').textContent = p.desc;
 
+  /*
+    Monta o elemento hero (imagem principal do projeto).
+    "const hero" guarda a referência ao elemento #det-hero.
+    "p.heroImg" é a URL da imagem — se estiver vazia (""), mostra o placeholder.
+    
+    Operador ternário: condição ? (se verdadeiro) : (se falso)
+    É um "if/else" em linha só.
+  */
   const hero = document.getElementById('det-hero');
   hero.innerHTML = p.heroImg
+    /* Se houver URL de imagem, insere uma tag <img> com ela */
     ? `<img src="${p.heroImg}" alt="${p.title}">`
+    /* Se não houver URL, mostra o texto placeholder */
     : '<span>[IMG_HERO — cole URL em projects[n].heroImg]</span>';
 
-  document.getElementById('det-gallery').innerHTML = p.gallery.map((u,i)=>
-    `<div class="gal-img">${u?`<img src="${u}" alt="">`:`<span>[IMG_${i+1}]</span>`}</div>`
-  ).join('');
+  /*
+    Monta a galeria de imagens.
+    "p.gallery" é um array de 3 URLs (pode ser ["","",""]).
+    ".map((u, i) => ...)" = transforma cada item (URL "u" e índice "i") em HTML.
+    "`...`" é uma template string — permite inserir variáveis com ${}.
+    ".join('')" junta todos os HTMLs gerados em uma única string.
+    ".innerHTML = ..." substitui o conteúdo da galeria com esse HTML.
+  */
+  document.getElementById('det-gallery').innerHTML = p.gallery.map((u, i) =>
+    `<div class="gal-img">${
+      u                           /* Se "u" (URL) não estiver vazio... */
+      ? `<img src="${u}" alt="">` /* ...insere a imagem */
+      : `<span>[IMG_${i+1}]</span>` /* ...senão mostra "[IMG_1]", "[IMG_2]", etc. */
+    }</div>`
+  ).join(''); /* Une todas as divs em uma string contínua */
 
+  /*
+    Monta as tags de tecnologia.
+    "p.tags" é um array de strings (ex: ["UI/UX","REACT","TYPESCRIPT",...]).
+    ".map(t => ...)" transforma cada tag "t" em um <span> HTML.
+    ".join('')" une tudo em uma string.
+  */
   document.getElementById('det-tags').innerHTML = p.tags
-    .map(t=>`<span class="wtag" style="margin:2px;">${t}</span>`).join('');
+    .map(t => `<span class="wtag" style="margin:2px;">${t}</span>`)
+    .join('');
 
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>{
-    b.classList.toggle('on', b.textContent.trim()==='WORK');
+  /*
+    Esconde TODAS as páginas e remove o destaque de todos os botões
+    (mesmo processo do início da função sp).
+  */
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+
+  /*
+    Percorre todos os botões e ativa SOMENTE o botão "WORK"
+    (porque o detalhe é uma sub-página de WORK).
+    ".trim()" remove espaços no início/fim da string.
+    "=== 'WORK'" compara estritamente (tipo E valor) — resultado: true ou false.
+  */
+  document.querySelectorAll('.nb').forEach(b => {
+    b.classList.toggle('on', b.textContent.trim() === 'WORK');
+    /* ".toggle(classe, condicao)" = adiciona a classe se a condição for true,
+       remove se for false. */
   });
+
+  /* Mostra a página de detalhe */
   document.getElementById('pg-detail').classList.add('on');
-}
 
+} /* Fim da função op */
+
+
+/*
+  ══════════════════════════════════════════════════════════════
+  FUNÇÃO: closeProj — FECHAR DETALHE E VOLTAR PARA A LISTA
+  ══════════════════════════════════════════════════════════════
+  
+  Chamada quando o usuário clica em "← WORK".
+  Esconde tudo e mostra novamente a lista de projetos.
+*/
 function closeProj() {
-  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>{
-    b.classList.toggle('on', b.textContent.trim()==='WORK');
-  });
-  document.getElementById('pg-work').classList.add('on');
-}
-</script>
 
-d8b   db
-888o  88  .ooooo.   .ooooo.  
-88V8o 88 d88' `88b d88' `"Y8 
-88 V8o88 888   888 888       
-88  V888 888   888 888   .o8 
-VP   V8P `Y8bod8P' `Y8bod8P'
+  /* Esconde todas as páginas */
+  document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+
+  /* Ativa apenas o botão "WORK" na nav */
+  document.querySelectorAll('.nb').forEach(b => {
+    b.classList.toggle('on', b.textContent.trim() === 'WORK');
+  });
+
+  /* Mostra a página de lista de projetos (pg-work) */
+  document.getElementById('pg-work').classList.add('on');
+
+}
+
+</script>
